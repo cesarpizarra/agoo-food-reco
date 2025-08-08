@@ -43,8 +43,10 @@ export function SignUpForm() {
         return;
       }
 
-      toast.success("Account created successfully!");
-      router.push("/sign-in");
+      toast.success(
+          "Account created successfully! Please check your email for verification.",
+        );
+        router.push("/verification-pending");
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong");
