@@ -5,6 +5,8 @@ import { getRestaurants } from "@/data/restaurant/get-restaurants";
 import { Metadata } from "next";
 import { Restaurant } from "@/types/restaurant";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Restaurants in Agoo, La Union",
   description: "Discover the best places to eat in Agoo, La Union.",

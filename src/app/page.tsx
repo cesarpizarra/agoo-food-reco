@@ -8,6 +8,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { getPopularRestaurants } from "@/data/restaurant/get-popular-restaurants";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const result = await getPopularRestaurants();
   const popularRestaurants = result.success && result.data ? result.data : [];
