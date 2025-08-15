@@ -1,5 +1,6 @@
 export type Restaurant = {
   id: string;
+  ownerName?: string;
   name: string;
   description: string;
   imageUrl?: string;

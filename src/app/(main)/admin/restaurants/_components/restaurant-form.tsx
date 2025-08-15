@@ -46,6 +46,7 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(restaurantFormSchema),
     defaultValues: {
+      ownerName: restaurant?.ownerName || undefined,
       name: restaurant?.name || "",
       email: restaurant?.email || "",
       phone: restaurant?.phone || "",
@@ -115,12 +116,25 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
+        <FormField
+            control={form.control}
+            name="ownerName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Owner Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter restaurant name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Restaurant Name</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter restaurant name" {...field} />
                 </FormControl>

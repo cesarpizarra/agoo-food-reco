@@ -10,6 +10,7 @@ export async function createRestaurant(data: RestaurantFormData) {
     const imageUrl = await uploadImage(data.imageUrl as unknown as File);
     const restaurant = await prisma.restaurant.create({
       data: {
+        ownerName: data.ownerName,
         name: data.name,
         email: data.email,
         phone: data.phone,

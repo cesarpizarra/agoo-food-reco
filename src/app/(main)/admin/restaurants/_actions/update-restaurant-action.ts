@@ -35,6 +35,7 @@ export async function updateRestaurant(id: string, data: RestaurantFormData) {
     const restaurant = await prisma.restaurant.update({
       where: { id },
       data: {
+        ownerName: data.ownerName,
         name: data.name,
         email: data.email,
         phone: data.phone,

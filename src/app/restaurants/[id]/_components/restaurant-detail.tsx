@@ -28,6 +28,9 @@ export function RestaurantDetail({ restaurant }: RestaurantDetailProps) {
           <h1 className="mb-2 text-3xl font-bold md:text-4xl">
             {restaurant.name}
           </h1>
+          <p className="text-muted-foreground text-sm">
+            {restaurant.ownerName}
+          </p>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
               <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />

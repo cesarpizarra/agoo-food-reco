@@ -70,6 +70,7 @@ export function RestaurantTable({ restaurants }: RestaurantTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Owner Name</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Opening Hours</TableHead>
@@ -81,6 +82,7 @@ export function RestaurantTable({ restaurants }: RestaurantTableProps) {
         <TableBody>
           {restaurants.map((restaurant) => (
             <TableRow key={restaurant.id}>
+              <TableCell className="font-medium">{restaurant.ownerName}</TableCell>
               <TableCell className="font-medium">{restaurant.name}</TableCell>
               <TableCell>
                 <Badge

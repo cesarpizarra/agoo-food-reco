@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -35,6 +36,7 @@ export function RestaurantList({ restaurants }: RestaurantListProps) {
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>{restaurant.name}</CardTitle>
+                  <CardDescription>{restaurant.ownerName}</CardDescription>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
