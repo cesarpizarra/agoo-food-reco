@@ -44,8 +44,49 @@ export async function updateRestaurant(id: string, data: RestaurantFormData) {
         description: data.description,
         openingHours: data.openingHours,
         status: data.status,
+        categoryId: data.categoryId,
       },
     });
+
+    if (data.existingGalleryImages || (data.galleryImages && data.galleryImages.length > 0)) {
+      await prisma.restaurantGallery.deleteMany({
+        where: { restaurantId: id },
+      });
+
+      const galleryPromises = [];
+
+      if (data.existingGalleryImages) {
+        for (const existingImage of data.existingGalleryImages) {
+          galleryPromises.push(
+            prisma.restaurantGallery.create({
+              data: {
+                imageUrl: existingImage.imageUrl,
+                caption: existingImage.caption,
+                restaurantId: id,
+              },
+            })
+          );
+        }
+      }
+
+      if (data.galleryImages && data.galleryImages.length > 0) {
+        for (let i = 0; i < data.galleryImages.length; i++) {
+          const file = data.galleryImages[i];
+          const uploadedImage = await uploadImage(file);
+          galleryPromises.push(
+            prisma.restaurantGallery.create({
+              data: {
+                imageUrl: uploadedImage?.data?.url || "",
+                caption: data.galleryCaptions?.[i] || null,
+                restaurantId: id,
+              },
+            })
+          );
+        }
+      }
+
+      await Promise.all(galleryPromises);
+    }
 
     revalidatePath("/admin/restaurants");
 

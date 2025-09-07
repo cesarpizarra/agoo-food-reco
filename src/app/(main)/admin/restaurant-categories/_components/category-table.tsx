@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { showConfirmAlert } from "@/utils/confirm-alert";
 import { toast } from "sonner";
-import { deleteCategory } from "../_actions/delete-category-action";
+import { deleteRestaurantCategory } from "../_actions/delete-resturant-category-action";
 import { CategoryModal } from "./category-modal";
 import { getStatusBadgeConfig } from "@/utils/badge-variants";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +41,7 @@ export function CategoryTable({ categories }: CategoryTableProps) {
 
     if (confirmed) {
       try {
-        const response = await deleteCategory(id);
+        const response = await deleteRestaurantCategory(id);
         if (response.error) {
           toast.error(response.error);
           return;

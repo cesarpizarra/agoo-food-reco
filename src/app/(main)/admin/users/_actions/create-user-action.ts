@@ -25,6 +25,7 @@ export async function createUser(data: z.infer<typeof signUpFormSchema>) {
         email: validatedData.email,
         password: hashedPassword,
         role: validatedData.role,
+        emailVerified:true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },

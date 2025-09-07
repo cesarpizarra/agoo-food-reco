@@ -5,17 +5,17 @@ import { revalidatePath } from "next/cache";
 import { categoryFormSchema } from "@/schemas";
 import { z } from "zod";
 
-export async function updateCategory(
+export async function updateRestaurantCategory(
   id: string,
   data: z.infer<typeof categoryFormSchema>,
 ) {
   try {
     const validatedData = categoryFormSchema.parse(data);
-    const category = await prisma.menuCategory.update({
+    const category = await prisma.restaurantCategory.update({
       where: { id },
       data: validatedData,
     });
-    revalidatePath("/admin/categories");
+    revalidatePath("/admin/restaurant-categories");
     return { category };
   } catch (error) {
     console.error("Error updating category:", error);

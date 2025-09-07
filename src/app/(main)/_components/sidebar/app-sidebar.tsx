@@ -16,7 +16,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
 
   const userData = {
-    name: `${session?.user?.name}`,
+    name: session?.user?.name || "Guest",
     email: session?.user?.email || "",
   };
 

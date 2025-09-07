@@ -18,8 +18,24 @@ export async function createRestaurant(data: RestaurantFormData) {
         imageUrl: imageUrl?.data?.url || "",
         description: data.description,
         openingHours: data.openingHours,
+        categoryId: data.categoryId,
       },
     });
+
+    if (data.galleryImages && data.galleryImages.length > 0) {
+      const galleryPromises = data.galleryImages.map(async (file, index) => {
+        const uploadedImage = await uploadImage(file);
+        return prisma.restaurantGallery.create({
+          data: {
+            imageUrl: uploadedImage?.data?.url || "",
+            caption: data.galleryCaptions?.[index] || null,
+            restaurantId: restaurant.id,
+          },
+        });
+      });
+
+      await Promise.all(galleryPromises);
+    }
 
     revalidatePath("/admin/restaurants");
     return { success: true, data: restaurant };

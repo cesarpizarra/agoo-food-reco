@@ -33,8 +33,8 @@ import {
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { categoryFormSchema, CategoryFormData } from "@/schemas";
-import { createCategory } from "../_actions/create-category-action";
-import { updateCategory } from "../_actions/update-category-action";
+import { createRestaurantCategory } from "../_actions/create-resturant-category-action";
+import { updateRestaurantCategory } from "../_actions/update-restaurant-category-action";
 import { useRouter } from "next/navigation";
 import { MenuCategory } from "@/types/restaurant";
 
@@ -78,7 +78,7 @@ export function CategoryModal({
     try {
       setIsSubmitting(true);
       if (mode === "add") {
-        const result = await createCategory(data);
+        const result = await createRestaurantCategory(data);
         if (result.error) {
           toast.error(result.error);
           return;
@@ -91,7 +91,7 @@ export function CategoryModal({
         });
       } else {
         if (!category?.id) return;
-        const result = await updateCategory(category.id, data);
+        const result = await updateRestaurantCategory(category.id, data);
         if (result.error) {
           toast.error(result.error);
           return;
@@ -126,7 +126,7 @@ export function CategoryModal({
           </DialogTitle>
           <DialogDescription>
             {mode === "add"
-              ? "Add a new food category to the system."
+              ? "Add a new restaurant category to the system."
               : "Update the category information."}
           </DialogDescription>
         </DialogHeader>
@@ -139,7 +139,7 @@ export function CategoryModal({
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Category name" {...field} />
+                    <Input placeholder="Restaurant category name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -152,7 +152,7 @@ export function CategoryModal({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Category description" {...field} />
+                      <Textarea placeholder="Restaurant category description" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

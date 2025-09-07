@@ -4,13 +4,12 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Restaurant } from "@/types/restaurant";
-import { MapPin, Star, Clock, Phone } from "lucide-react";
+import { MapPin, Star, Clock, Phone, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -36,7 +35,6 @@ export function RestaurantList({ restaurants }: RestaurantListProps) {
               <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>{restaurant.name}</CardTitle>
-                  <CardDescription>{restaurant.ownerName}</CardDescription>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -48,10 +46,15 @@ export function RestaurantList({ restaurants }: RestaurantListProps) {
                 {restaurant.description}
               </p>
               <div className="space-y-2">
+              <div className="flex items-center space-x-2 text-sm">
+                  <User className="text-primary h-4 w-4" />
+                  <span>Owner: {restaurant.ownerName}</span>
+                </div>
                 <div className="flex items-center space-x-2 text-sm">
                   <MapPin className="text-primary h-4 w-4" />
                   <span>{restaurant.address}</span>
                 </div>
+              
                 <div className="flex items-center space-x-2 text-sm">
                   <Clock className="text-primary h-4 w-4" />
                   <span>{restaurant.openingHours}</span>

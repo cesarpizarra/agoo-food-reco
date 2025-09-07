@@ -29,19 +29,29 @@ import { updateRestaurant } from "../_actions/update-restaurant-action";
 import { showConfirmDialog } from "@/utils/alert";
 import { Restaurant } from "@/types/restaurant";
 import Image from "next/image";
+import { RestaurantCategory } from "@prisma/client";
 
 interface RestaurantFormProps {
   restaurant?: Restaurant;
   mode: "add" | "edit";
+  categories: RestaurantCategory[];
 }
 
-export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
+export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(
     restaurant?.imageUrl || "",
   );
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [galleryCaptions, setGalleryCaptions] = useState<string[]>([]);
+  const [existingGalleryImages, setExistingGalleryImages] = useState<Array<{
+    id: string;
+    imageUrl: string;
+    caption?: string | null;
+  }>>(restaurant?.gallery || []);
 
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(restaurantFormSchema),
@@ -55,6 +65,7 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
       description: restaurant?.description || "",
       openingHours: restaurant?.openingHours || "Monday to Friday: 8 AM - 4 PM",
       status: restaurant?.status || "ACTIVE",
+      categoryId: restaurant?.categoryId || undefined,
     },
   });
 
@@ -71,6 +82,45 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
     }
   };
 
+  const handleGalleryChange = (files: FileList | null) => {
+    if (!files) return;
+    
+    const newFiles = Array.from(files);
+    const newPreviews: string[] = [];
+    const newCaptions: string[] = [];
+    
+    newFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreviews.push(reader.result as string);
+        newCaptions.push("");
+        if (newPreviews.length === newFiles.length) {
+          setGalleryPreviews([...galleryPreviews, ...newPreviews]);
+          setGalleryCaptions([...galleryCaptions, ...newCaptions]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    setGalleryFiles([...galleryFiles, ...newFiles]);
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setGalleryFiles(galleryFiles.filter((_, i) => i !== index));
+    setGalleryPreviews(galleryPreviews.filter((_, i) => i !== index));
+    setGalleryCaptions(galleryCaptions.filter((_, i) => i !== index));
+  };
+
+  const updateGalleryCaption = (index: number, caption: string) => {
+    const newCaptions = [...galleryCaptions];
+    newCaptions[index] = caption;
+    setGalleryCaptions(newCaptions);
+  };
+
+  const removeExistingGalleryImage = (imageId: string) => {
+    setExistingGalleryImages(prev => prev.filter(img => img.id !== imageId));
+  };
+
   const onSubmit = async (data: RestaurantFormData) => {
     try {
       setIsSubmitting(true);
@@ -80,6 +130,11 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
       } else if (data.imageUrl) {
         data.imageUrl = data.imageUrl;
       }
+
+      // Add gallery data
+      data.galleryImages = galleryFiles;
+      data.galleryCaptions = galleryCaptions;
+      data.existingGalleryImages = existingGalleryImages;
 
       let result;
       if (mode === "add") {
@@ -195,6 +250,37 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
             )}
           />
 
+<FormField
+          control={form.control}
+          name="categoryId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.length > 0 ? (
+                    categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>
+                      No categories available
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
           <div className="max-w-xs">
             <FormLabel>Restaurant Image</FormLabel>
             <input
@@ -216,6 +302,88 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
                 className="mt-2 h-32 w-32 rounded border object-cover"
               />
             )}
+          </div>
+
+          {/* Gallery Images Section */}
+          <div className="md:col-span-2">
+            <FormLabel>Gallery Images</FormLabel>
+            <div className="space-y-4">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleGalleryChange(e.target.files)}
+                className="file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block w-full cursor-pointer text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold"
+                disabled={isSubmitting}
+              />
+              
+              {/* Existing Gallery Images */}
+              {existingGalleryImages.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">Current Gallery Images:</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {existingGalleryImages.map((image) => (
+                      <div key={image.id} className="relative group">
+                        <Image
+                          src={image.imageUrl}
+                          alt={image.caption || "Gallery image"}
+                          width={200}
+                          height={200}
+                          className="w-full h-32 rounded border object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeExistingGalleryImage(image.id)}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                          disabled={isSubmitting}
+                          title="Remove image"
+                        >
+                          ×
+                        </button>
+                        {image.caption && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {image.caption}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* New Gallery Images */}
+              {galleryPreviews.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {galleryPreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <Image
+                        src={preview}
+                        alt={`Gallery image ${index + 1}`}
+                        width={200}
+                        height={200}
+                        className="w-full h-32 rounded border object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeGalleryImage(index)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isSubmitting}
+                      >
+                        ×
+                      </button>
+                      <input
+                        type="text"
+                        placeholder="Caption (optional)"
+                        value={galleryCaptions[index] || ""}
+                        onChange={(e) => updateGalleryCaption(index, e.target.value)}
+                        className="w-full mt-2 px-2 py-1 text-sm border rounded"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <FormField
@@ -252,7 +420,10 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
               </FormItem>
             )}
           />
+      
+        
 
+          </div>
           {mode === "edit" && (
             <FormField
               control={form.control}
@@ -278,7 +449,6 @@ export function RestaurantForm({ restaurant, mode }: RestaurantFormProps) {
               )}
             />
           )}
-        </div>
 
         <div className="flex justify-end gap-4">
           <Button

@@ -18,7 +18,7 @@ export async function getMenuItems() {
             select: { name: true },
           }),
           item.categoryId
-            ? prisma.category.findUnique({
+            ? prisma.menuCategory.findUnique({
                 where: { id: item.categoryId },
                 select: { id: true, name: true },
               })

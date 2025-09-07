@@ -59,18 +59,14 @@ export function FavoriteButton({ restaurantId }: FavoriteButtonProps) {
 
   return (
     <Button
-      size="sm"
-      variant={isFavorited ? "default" : "outline"}
-      className={`${
-        isFavorited
-          ? "bg-red-500 text-white hover:bg-red-600"
-          : "bg-yellow-500 text-white hover:bg-yellow-600"
-      }`}
+      className="w-full justify-start"
+      variant="outline"
       onClick={handleToggleFavorite}
       disabled={isLoading}
       title={isFavorited ? "Remove from Favorites" : "Add to Favorites"}
     >
-      <Heart className={`h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
+      <Heart className={`h-4 w-4 mr-2 ${isFavorited ? "fill-current text-red-500" : ""}`} />
+      {isFavorited ? "Remove from Favorites" : "Add to Favorites"}
     </Button>
   );
 }

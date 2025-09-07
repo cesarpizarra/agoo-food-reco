@@ -6,6 +6,11 @@ export async function getRestaurant(id: string) {
   try {
     const restaurant = await prisma.restaurant.findUnique({
       where: { id },
+      include: {
+        gallery: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
     });
 
     if (!restaurant) {

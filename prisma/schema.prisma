@@ -7,14 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Category {
+model MenuCategory {
   id          String      @id @default(uuid())
   name        String      @unique
   description String      @db.Text
   status      String      @default("ACTIVE")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  menuItems   MenuItem[]  // Relation: One category to many menu items
+  menuItems   MenuItem[]  
+}
+
+model RestaurantCategory {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String      @db.Text
+  status      String      @default("ACTIVE")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  restaurants Restaurant[]
+}
+
+model RestaurantGallery {
+  id           String     @id @default(uuid())
+  imageUrl     String
+  caption      String?
+  restaurantId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  
+  @@index([restaurantId], map: "RestaurantGallery_restaurantId_fkey")
 }
 
 model Comment {
@@ -56,8 +79,8 @@ model MenuItem {
   updatedAt    DateTime    @updatedAt
 
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
-  category     Category?   @relation(fields: [categoryId], references: [id])
-  comments     Comment[]   // One menu item has many comments
+  category     MenuCategory? @relation(fields: [categoryId], references: [id])
+  comments     Comment[]  
 
   @@index([categoryId], map: "MenuItem_categoryId_fkey")
   @@index([restaurantId], map: "MenuItem_restaurantId_fkey")
@@ -76,12 +99,17 @@ model Restaurant {
   openingHours  String       @db.Text
   averageRating Float        @default(0)
   totalReviews  Int          @default(0)
+  categoryId    String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  menuItems     MenuItem[]   // One restaurant has many menu items
-  reviews       Review[]     // One restaurant has many reviews
-  favorites     Favorite[]   // One restaurant can be favorited many times
+  category      RestaurantCategory? @relation(fields: [categoryId], references: [id])
+  menuItems     MenuItem[]   
+  reviews       Review[]     
+  favorites     Favorite[]   
+  gallery       RestaurantGallery[] 
+
+  @@index([categoryId], map: "Restaurant_categoryId_fkey")
 }
 
 model Review {
@@ -115,9 +143,9 @@ model User {
   emailVerificationToken String? @unique @db.VarChar(512)
   emailVerificationExpires DateTime?
 
-  comments     Comment[]  // One user can make many comments
-  reviews      Review[]   // One user can write many reviews
-  favorites    Favorite[] // One user can have many favorites
+  comments     Comment[]  
+  reviews      Review[]   
+  favorites    Favorite[] 
 }
 
 

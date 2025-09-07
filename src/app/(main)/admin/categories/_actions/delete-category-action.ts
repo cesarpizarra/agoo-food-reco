@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export async function deleteCategory(id: string) {
   try {
-    await prisma.category.delete({
+    await prisma.menuCategory.delete({
       where: { id },
     });
     revalidatePath("/admin/categories");

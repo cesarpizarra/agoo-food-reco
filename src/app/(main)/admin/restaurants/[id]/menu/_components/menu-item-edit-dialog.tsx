@@ -33,11 +33,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { updateMenuItem } from "../_actions/update-menu-action";
 import { MenuItemEditFormData, menuItemEditSchema } from "@/schemas";
-import { Category, MenuItem } from "@/types/restaurant";
+import { MenuCategory, MenuItem } from "@/types/restaurant";
 
 interface MenuItemEditDialogProps {
   menuItem: MenuItem;
-  categories: Category[];
+  categories: MenuCategory[];
   onSuccess?: () => void;
 }
 

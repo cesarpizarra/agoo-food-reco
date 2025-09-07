@@ -3,6 +3,7 @@ import { Footer } from "@/components/footer";
 import { getRestaurant } from "@/data/restaurant/get-restaurant";
 import { getMenuRestaurant } from "@/data/menu/get-restaurant-menu";
 import { getRestaurantReviews } from "@/data/review/get-restaurant-reviews";
+import { getRestaurantGallery } from "@/data/restaurant/get-restaurant-gallery";
 import { RestaurantMenu } from "./_components/restaurant-menu";
 import { RestaurantReviews } from "./_components/restaurant-reviews";
 import { notFound } from "next/navigation";
@@ -36,10 +37,11 @@ export async function generateMetadata({
 
 export default async function RestaurantPage({ params }: RestaurantPageProps) {
   const resolvedParams = await params;
-  const [restaurantResult, menuItemsResult, reviewsResult] = await Promise.all([
+  const [restaurantResult, menuItemsResult, reviewsResult, galleryResult] = await Promise.all([
     getRestaurant(resolvedParams.id!),
     getMenuRestaurant(resolvedParams.id!),
     getRestaurantReviews(resolvedParams.id!),
+    getRestaurantGallery(resolvedParams.id!),
   ]);
 
   if (!restaurantResult.success || !restaurantResult.data) {
@@ -54,6 +56,8 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
   const menuItems = menuItemsResult.data;
   const reviews =
     reviewsResult.success && reviewsResult.data ? reviewsResult.data : [];
+  const gallery =
+    galleryResult.success && galleryResult.data ? galleryResult.data : [];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -61,7 +65,7 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
       <main className="flex-1">
         <section className="bg-muted/30 px-4 pt-32 pb-16">
           <div className="container mx-auto">
-            <RestaurantDetail restaurant={restaurant as Restaurant} />
+            <RestaurantDetail restaurant={restaurant as Restaurant} gallery={gallery} />
           </div>
         </section>
 

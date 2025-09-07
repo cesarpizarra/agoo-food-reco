@@ -29,14 +29,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { showConfirmDialog } from "@/utils/alert";
 import Image from "next/image";
 
-interface Category {
+interface MenuCategory {
   id: string;
   name: string;
 }
 
 interface MenuItemFormProps {
   restaurantId: string;
-  categories: Category[];
+  categories: MenuCategory[];
 }
 
 export function MenuItemForm({ restaurantId, categories }: MenuItemFormProps) {

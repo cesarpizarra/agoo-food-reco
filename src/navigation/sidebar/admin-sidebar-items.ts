@@ -44,11 +44,6 @@ export const adminSidebarItems: NavGroup[] = [
         icon: Building2,
       },
       {
-        title: "Food Categories",
-        url: "/admin/categories",
-        icon: List,
-      },
-      {
         title: "Reviews",
         url: "/admin/reviews",
         icon: MessageCircle,
@@ -57,6 +52,23 @@ export const adminSidebarItems: NavGroup[] = [
         title: "Manage Users",
         url: "/admin/users",
         icon: Users,
+      },
+    ],
+  },
+
+  {
+    id: 3,
+    label: "Manage Categories",
+    items: [
+      {
+        title: "Food Categories",
+        url: "/admin/categories",
+        icon: List,
+      },
+      {
+        title: "Restaurant Categories",
+        url: "/admin/restaurant-categories",
+        icon: List,
       },
     ],
   },

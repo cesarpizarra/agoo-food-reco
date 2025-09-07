@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Star } from "lucide-react";
+import { Star, MessageCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -93,8 +93,9 @@ export function ReviewDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="bg-green-600">
-          Add Review
+        <Button className="w-full justify-start" variant="outline">
+          <MessageCircle className="h-4 w-4 mr-2" />
+          Write a Review
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
