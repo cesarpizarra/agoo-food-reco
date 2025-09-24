@@ -37,7 +37,11 @@ interface RestaurantFormProps {
   categories: RestaurantCategory[];
 }
 
-export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormProps) {
+export function RestaurantForm({
+  restaurant,
+  mode,
+  categories,
+}: RestaurantFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
@@ -47,11 +51,13 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
   const [galleryCaptions, setGalleryCaptions] = useState<string[]>([]);
-  const [existingGalleryImages, setExistingGalleryImages] = useState<Array<{
-    id: string;
-    imageUrl: string;
-    caption?: string | null;
-  }>>(restaurant?.gallery || []);
+  const [existingGalleryImages, setExistingGalleryImages] = useState<
+    Array<{
+      id: string;
+      imageUrl: string;
+      caption?: string | null;
+    }>
+  >(restaurant?.gallery || []);
 
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(restaurantFormSchema),
@@ -84,11 +90,11 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
 
   const handleGalleryChange = (files: FileList | null) => {
     if (!files) return;
-    
+
     const newFiles = Array.from(files);
     const newPreviews: string[] = [];
     const newCaptions: string[] = [];
-    
+
     newFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -101,7 +107,7 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
       };
       reader.readAsDataURL(file);
     });
-    
+
     setGalleryFiles([...galleryFiles, ...newFiles]);
   };
 
@@ -118,7 +124,9 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
   };
 
   const removeExistingGalleryImage = (imageId: string) => {
-    setExistingGalleryImages(prev => prev.filter(img => img.id !== imageId));
+    setExistingGalleryImages((prev) =>
+      prev.filter((img) => img.id !== imageId),
+    );
   };
 
   const onSubmit = async (data: RestaurantFormData) => {
@@ -171,7 +179,7 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
-        <FormField
+          <FormField
             control={form.control}
             name="ownerName"
             render={({ field }) => (
@@ -250,37 +258,38 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
             )}
           />
 
-<FormField
-          control={form.control}
-          name="categoryId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <Select
-                value={field.value}
-                onValueChange={field.onChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.length > 0 ? (
-                    categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="" disabled>
-                      No categories available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="categoryId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={categories.length === 0}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.length > 0 &&
+                      categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                {categories.length === 0 && (
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    No categories available. Create a restaurant category first.
+                  </p>
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="max-w-xs">
             <FormLabel>Restaurant Image</FormLabel>
             <input
@@ -316,32 +325,34 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
                 className="file:bg-primary/10 file:text-primary hover:file:bg-primary/20 block w-full cursor-pointer text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:px-4 file:py-2 file:text-sm file:font-semibold"
                 disabled={isSubmitting}
               />
-              
+
               {/* Existing Gallery Images */}
               {existingGalleryImages.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">Current Gallery Images:</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    Current Gallery Images:
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                     {existingGalleryImages.map((image) => (
-                      <div key={image.id} className="relative group">
+                      <div key={image.id} className="group relative">
                         <Image
                           src={image.imageUrl}
                           alt={image.caption || "Gallery image"}
                           width={200}
                           height={200}
-                          className="w-full h-32 rounded border object-cover"
+                          className="h-32 w-full rounded border object-cover"
                         />
                         <button
                           type="button"
                           onClick={() => removeExistingGalleryImage(image.id)}
-                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
                           disabled={isSubmitting}
                           title="Remove image"
                         >
                           ×
                         </button>
                         {image.caption && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                          <p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
                             {image.caption}
                           </p>
                         )}
@@ -350,23 +361,23 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
                   </div>
                 </div>
               )}
-              
+
               {/* New Gallery Images */}
               {galleryPreviews.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {galleryPreviews.map((preview, index) => (
-                    <div key={index} className="relative group">
+                    <div key={index} className="group relative">
                       <Image
                         src={preview}
                         alt={`Gallery image ${index + 1}`}
                         width={200}
                         height={200}
-                        className="w-full h-32 rounded border object-cover"
+                        className="h-32 w-full rounded border object-cover"
                       />
                       <button
                         type="button"
                         onClick={() => removeGalleryImage(index)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-600"
                         disabled={isSubmitting}
                       >
                         ×
@@ -375,8 +386,10 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
                         type="text"
                         placeholder="Caption (optional)"
                         value={galleryCaptions[index] || ""}
-                        onChange={(e) => updateGalleryCaption(index, e.target.value)}
-                        className="w-full mt-2 px-2 py-1 text-sm border rounded"
+                        onChange={(e) =>
+                          updateGalleryCaption(index, e.target.value)
+                        }
+                        className="mt-2 w-full rounded border px-2 py-1 text-sm"
                         disabled={isSubmitting}
                       />
                     </div>
@@ -420,35 +433,32 @@ export function RestaurantForm({ restaurant, mode, categories }: RestaurantFormP
               </FormItem>
             )}
           />
-      
-        
-
-          </div>
-          {mode === "edit" && (
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>Status</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="ACTIVE">Active</SelectItem>
-                      <SelectItem value="INACTIVE">Inactive</SelectItem>
-                      <SelectItem value="PENDING">Pending</SelectItem>
-                      <SelectItem value="SUSPENDED">Suspended</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
+        </div>
+        {mode === "edit" && (
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>Status</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="INACTIVE">Inactive</SelectItem>
+                    <SelectItem value="PENDING">Pending</SelectItem>
+                    <SelectItem value="SUSPENDED">Suspended</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <div className="flex justify-end gap-4">
           <Button

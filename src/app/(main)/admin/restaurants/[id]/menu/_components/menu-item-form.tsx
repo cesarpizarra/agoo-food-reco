@@ -54,7 +54,7 @@ export function MenuItemForm({ restaurantId, categories }: MenuItemFormProps) {
       name: "",
       description: "",
       price: 0,
-      categoryId: "",
+      categoryId: undefined as unknown as string,
     },
   });
 
@@ -158,19 +158,25 @@ export function MenuItemForm({ restaurantId, categories }: MenuItemFormProps) {
               <Select
                 value={field.value}
                 onValueChange={field.onChange}
-                required
+                disabled={categories.length === 0}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
+                  {categories.length > 0 &&
+                    categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
+              {categories.length === 0 && (
+                <p className="text-muted-foreground mt-1 text-xs">
+                  No menu categories available. Create a menu category first.
+                </p>
+              )}
               <FormMessage />
             </FormItem>
           )}
