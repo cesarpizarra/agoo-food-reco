@@ -43,7 +43,7 @@ export default async function Home() {
         <section className="bg-muted/50 py-16">
           <div className="container mx-auto px-4">
             <h2 className="mb-12 text-center text-3xl font-bold">
-              Top 5 Popular Restaurants
+              Top Rated Restaurants
             </h2>
             {popularRestaurants.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
@@ -78,7 +78,7 @@ export default async function Home() {
                         {restaurant.description}
                       </p>
                       <div className="space-y-2">
-                      <div className="text-muted-foreground flex items-center space-x-2 text-xs">
+                        <div className="text-muted-foreground flex items-center space-x-2 text-xs">
                           <User className="h-3 w-3" />
                           <span className="line-clamp-1">
                             Owner: {restaurant.ownerName}

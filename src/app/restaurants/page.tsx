@@ -4,6 +4,7 @@ import { RestaurantList } from "@/app/restaurants/_components/restaurant-list";
 import { getRestaurants } from "@/data/restaurant/get-restaurants";
 import { Metadata } from "next";
 import { Restaurant } from "@/types/restaurant";
+import { SearchForm } from "./_components/search-form";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +13,13 @@ export const metadata: Metadata = {
   description: "Discover the best places to eat in Agoo, La Union.",
 };
 
-export default async function RestaurantsPage() {
-  const result = await getRestaurants();
+export default async function RestaurantsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ q?: string }>;
+}) {
+  const search = (await searchParams)?.q?.trim() || undefined;
+  const result = await getRestaurants(search);
 
   if (!result.success || !result.data) {
     throw new Error(result.error || "Failed to load restaurants");
@@ -35,6 +41,7 @@ export default async function RestaurantsPage() {
               favorites to international cuisine, find your next dining
               destination.
             </p>
+            <SearchForm defaultValue={search} />
           </div>
         </section>
 

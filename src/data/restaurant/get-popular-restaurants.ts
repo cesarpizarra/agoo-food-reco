@@ -7,13 +7,16 @@ export async function getPopularRestaurants() {
     const restaurants = await prisma.restaurant.findMany({
       where: {
         status: "ACTIVE",
+        totalReviews: {
+          gt: 0,
+        },
       },
       orderBy: [
         {
-          averageRating: "desc",
+          totalReviews: "desc",
         },
         {
-          totalReviews: "desc",
+          averageRating: "desc",
         },
       ],
       take: 5,

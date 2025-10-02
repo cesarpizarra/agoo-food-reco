@@ -37,12 +37,13 @@ export async function generateMetadata({
 
 export default async function RestaurantPage({ params }: RestaurantPageProps) {
   const resolvedParams = await params;
-  const [restaurantResult, menuItemsResult, reviewsResult, galleryResult] = await Promise.all([
-    getRestaurant(resolvedParams.id!),
-    getMenuRestaurant(resolvedParams.id!),
-    getRestaurantReviews(resolvedParams.id!),
-    getRestaurantGallery(resolvedParams.id!),
-  ]);
+  const [restaurantResult, menuItemsResult, reviewsResult, galleryResult] =
+    await Promise.all([
+      getRestaurant(resolvedParams.id!),
+      getMenuRestaurant(resolvedParams.id!),
+      getRestaurantReviews(resolvedParams.id!),
+      getRestaurantGallery(resolvedParams.id!),
+    ]);
 
   if (!restaurantResult.success || !restaurantResult.data) {
     notFound();
@@ -65,7 +66,10 @@ export default async function RestaurantPage({ params }: RestaurantPageProps) {
       <main className="flex-1">
         <section className="bg-muted/30 px-4 pt-32 pb-16">
           <div className="container mx-auto">
-            <RestaurantDetail restaurant={restaurant as Restaurant} gallery={gallery} />
+            <RestaurantDetail
+              restaurant={restaurant as Restaurant}
+              gallery={gallery}
+            />
           </div>
         </section>
 
